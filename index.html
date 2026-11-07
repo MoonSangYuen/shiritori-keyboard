@@ -180,6 +180,8 @@ function render() {
 }
 function update() {
   const w = word.join('');
+  const nh = nextChar($('prev').value);
+  document.querySelectorAll('#grid .k').forEach(b => { const j = b.querySelector('.j'); b.classList.toggle('hint', !!nh && word.length === 0 && j && toHira(j.textContent) === nh); });
   $('out').innerHTML = w.replace(/</g, '&lt;') + '<span class="cursor"></span>';
   const h = toHira(w);
   $('kr').textContent = w ? '읽는 법: ' + korean(h) : '';
