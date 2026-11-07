@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>일본어 끝말잇기 키보드 | 스피드만단어 일본어</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;background:#FFF8EF;color:#1F3B5B;padding:16px}
+.wrap{max-width:900px;margin:0 auto}
+h1{font-size:24px;margin-bottom:4px}
+.sub{font-size:14px;color:#5a6b7d;margin-bottom:14px}
+.card{background:#fff;border:2px solid #F3D3C4;border-radius:16px;padding:14px 16px;margin-bottom:12px}
+.label{font-size:13px;font-weight:700;color:#8a5a44;margin-bottom:6px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+input.prev{flex:1;min-width:180px;font-size:22px;padding:8px 12px;border:2px solid #d8dfe6;border-radius:10px;font-family:'Yu Gothic UI','Meiryo',sans-serif}
+.next{font-size:16px;font-weight:700}
+.next b{display:inline-block;min-width:44px;text-align:center;font-size:30px;color:#E8443A;background:#FDE7E4;border-radius:10px;padding:2px 10px;margin-left:4px;font-family:'Yu Gothic UI','Meiryo',sans-serif}
+.out{font-size:38px;min-height:58px;font-family:'Yu Gothic UI','Meiryo',sans-serif;font-weight:700;letter-spacing:2px;word-break:break-all}
+.out .cursor{display:inline-block;width:3px;height:38px;background:#E8443A;vertical-align:middle;animation:b 1s steps(1) infinite}
+@keyframes b{50%{opacity:0}}
+.kr{font-size:16px;color:#5a6b7d;min-height:22px}
+.msg{font-size:15px;font-weight:700;min-height:22px;margin-top:4px}
+.msg.ok{color:#2E9E5B}.msg.bad{color:#E8443A}
+.tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.tab{border:2px solid #1F3B5B;background:#fff;color:#1F3B5B;border-radius:999px;padding:7px 16px;font-size:15px;font-weight:700;cursor:pointer}
+.tab.on{background:#1F3B5B;color:#fff}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.k{border:2px solid #d8dfe6;background:#fff;border-radius:12px;padding:6px 0 4px;cursor:pointer;text-align:center;user-select:none;transition:transform .05s}
+.k:hover{border-color:#E8443A;background:#FFF3F0}
+.k:active{transform:scale(.94)}
+.k .j{display:block;font-size:28px;font-weight:700;font-family:'Yu Gothic UI','Meiryo',sans-serif;line-height:1.2}
+.k .h{display:block;font-size:12px;color:#8a97a6}
+.k.empty{visibility:hidden}
+.k.hint{border-color:#E8443A;box-shadow:0 0 0 3px #FDE7E4}
+.fn{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.f{flex:1;min-width:90px;border:none;border-radius:12px;padding:12px 6px;font-size:16px;font-weight:700;cursor:pointer;color:#fff;background:#4A7FB5}
+.f.gray{background:#8a97a6}.f.red{background:#E8443A}.f.green{background:#2E9E5B}
+.f:active{transform:scale(.96)}
+input.mean{flex:1;min-width:160px;font-size:16px;padding:9px 12px;border:2px solid #d8dfe6;border-radius:10px}
+.copied{font-size:14px;color:#2E9E5B;font-weight:700;min-height:20px;margin-top:6px}
+details{font-size:14px;line-height:1.7}
+summary{cursor:pointer;font-weight:700}
+.foot{text-align:center;font-size:12px;color:#8a97a6;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>👑 일본어 끝말잇기 키보드</h1>
+  <div class="sub">마우스로 글자를 눌러 단어를 만들고, [복사하기]를 눌러 카페 끝말잇기 메모칸에 붙여 넣으세요 (Ctrl+V).</div>
+
+  <div class="card">
+    <div class="label">① 앞사람 단어 (카페에서 맨 위 단어를 보고 입력하거나 붙여 넣기)</div>
+    <div class="row">
+      <input class="prev" id="prev" placeholder="예: しりとり">
+      <div class="next" id="nextBox">다음 글자 <b id="next">?</b></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="label">② 내 단어</div>
+    <div class="out" id="out"><span class="cursor"></span></div>
+    <div class="kr" id="kr"></div>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab on" data-mode="hira">ひらがな 히라가나</button>
+      <button class="tab" data-mode="kata">カタカナ 가타카나</button>
+      <button class="tab" data-set="base">기본</button>
+      <button class="tab" data-set="daku">탁음 · 반탁음</button>
+      <button class="tab" data-set="small">작은 글자 · 요음</button>
+    </div>
+    <div class="grid" id="grid"></div>
+    <div class="fn">
+      <button class="f" id="kDaku">゛ 탁음 바꾸기</button>
+      <button class="f" id="kSmall">小 작게 / 크게</button>
+      <button class="f" id="kLong">ー 장음</button>
+      <button class="f gray" id="kBack">⌫ 지우기</button>
+      <button class="f gray" id="kClear">전부 지우기</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="label">③ 뜻 (선택) 쓰고 복사하기</div>
+    <div class="row">
+      <input class="mean" id="mean" placeholder="뜻 예: 고릴라">
+      <button class="f green" id="kCopy" style="flex:0 0 150px">📋 복사하기</button>
+    </div>
+    <div class="copied" id="copied"></div>
+  </div>
+
+  <div class="card">
+    <details>
+      <summary>끝말잇기 규칙 보기</summary>
+      1. 앞사람 단어의 마지막 글자로 시작하는 단어를 말해요.<br>
+      2. 「ん」으로 끝나면 져요!<br>
+      3. 명사만 써요. 이미 나온 단어는 다시 못 써요.<br>
+      4. 장음(ー)으로 끝나면 ー 앞 글자로 이어요. 예: コーヒー → 「ひ」<br>
+      5. 작은 글자(ゃ ゅ ょ)로 끝나면 큰 글자로 이어요. 예: でんしゃ → 「や」<br>
+      6. 탁음(゛)으로 끝나도 그대로 이어요. 예: りんご → 「ご」
+    </details>
+  </div>
+  <div class="foot">스피드만단어 일본어 카페 · cafe.naver.com/sfuneng</div>
+</div>
+
+<script>
+const BASE = [
+ ['あ','い','う','え','お'],['か','き','く','け','こ'],['さ','し','す','せ','そ'],['た','ち','つ','て','と'],
+ ['な','に','ぬ','ね','の'],['は','ひ','ふ','へ','ほ'],['ま','み','む','め','も'],['や','','ゆ','','よ'],
+ ['ら','り','る','れ','ろ'],['わ','','を','','ん']];
+const DAKU = [
+ ['が','ぎ','ぐ','げ','ご'],['ざ','じ','ず','ぜ','ぞ'],['だ','ぢ','づ','で','ど'],['ば','び','ぶ','べ','ぼ'],['ぱ','ぴ','ぷ','ぺ','ぽ'],['','ゔ','','','']];
+const SMALL = [
+ ['ぁ','ぃ','ぅ','ぇ','ぉ'],['ゃ','','ゅ','','ょ'],['っ','','','',''],
+ ['きゃ','きゅ','きょ','しゃ','しゅ'],['しょ','ちゃ','ちゅ','ちょ','にゃ'],['ひゃ','みゃ','りゃ','ぎゃ','じゃ'],['じゅ','じょ','びゃ','ぴゃ','ー']];
+const KR = {あ:'아',い:'이',う:'우',え:'에',お:'오',か:'카',き:'키',く:'쿠',け:'케',こ:'코',さ:'사',し:'시',す:'스',せ:'세',そ:'소',た:'타',ち:'치',つ:'츠',て:'테',と:'토',
+ な:'나',に:'니',ぬ:'누',ね:'네',の:'노',は:'하',ひ:'히',ふ:'후',へ:'헤',ほ:'호',ま:'마',み:'미',む:'무',め:'메',も:'모',や:'야',ゆ:'유',よ:'요',
+ ら:'라',り:'리',る:'루',れ:'레',ろ:'로',わ:'와',を:'오',ん:'ㄴ',が:'가',ぎ:'기',ぐ:'구',げ:'게',ご:'고',ざ:'자',じ:'지',ず:'즈',ぜ:'제',ぞ:'조',
+ だ:'다',ぢ:'지',づ:'즈',で:'데',ど:'도',ば:'바',び:'비',ぶ:'부',べ:'베',ぼ:'보',ぱ:'파',ぴ:'피',ぷ:'푸',ぺ:'페',ぽ:'포',ゔ:'부',
+ ぁ:'아',ぃ:'이',ぅ:'우',ぇ:'에',ぉ:'오',ゃ:'야',ゅ:'유',ょ:'요',っ:'ㅅ'};
+const YOON = {きゃ:'캬',きゅ:'큐',きょ:'쿄',しゃ:'샤',しゅ:'슈',しょ:'쇼',ちゃ:'차',ちゅ:'추',ちょ:'초',にゃ:'냐',にゅ:'뉴',にょ:'뇨',ひゃ:'햐',ひゅ:'휴',ひょ:'효',
+ みゃ:'먀',みゅ:'뮤',みょ:'묘',りゃ:'랴',りゅ:'류',りょ:'료',ぎゃ:'갸',ぎゅ:'규',ぎょ:'교',じゃ:'자',じゅ:'주',じょ:'조',びゃ:'뱌',びゅ:'뷰',びょ:'뵤',ぴゃ:'퍄',ぴゅ:'퓨',ぴょ:'표'};
+const CYCLES = ['かが','きぎ','くぐ','けげ','こご','さざ','しじ','すず','せぜ','そぞ','ただ','ちぢ','つづ','てで','とど','はばぱ','ひびぴ','ふぶぷ','へべぺ','ほぼぽ','うゔ'];
+const cycleNext = h => { for (const c of CYCLES) { const i = c.indexOf(h); if (i >= 0) return c[(i + 1) % c.length]; } return h; };
+const SMALL_MAP = {あ:'ぁ',い:'ぃ',う:'ぅ',え:'ぇ',お:'ぉ',や:'ゃ',ゆ:'ゅ',よ:'ょ',つ:'っ',わ:'ゎ'};
+const BIG = {}; for (const [a,b] of Object.entries(SMALL_MAP)) BIG[b] = a;
+
+const toKata = s => s.replace(/[\u3041-\u3096]/g, c => String.fromCharCode(c.charCodeAt(0) + 0x60));
+const toHira = s => s.replace(/[\u30A1-\u30F6]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60));
+
+let mode = 'hira', set = 'base', word = [];
+const $ = id => document.getElementById(id);
+
+function addFinal(syl, jamo) { // jamo: 4 = ㄴ, 19 = ㅅ
+  const c = syl.charCodeAt(0);
+  if (c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 === 0) return String.fromCharCode(c + jamo);
+  return syl + (jamo === 4 ? 'ㄴ' : 'ㅅ');
+}
+function korean(h) {
+  let out = '';
+  for (let i = 0; i < h.length; i++) {
+    const two = h.slice(i, i + 2);
+    if (YOON[two]) { out += YOON[two]; i++; continue; }
+    const ch = h[i];
+    if (ch === 'ん') { out = out ? out.slice(0, -1) + addFinal(out.slice(-1), 4) : 'ㄴ'; continue; }
+    if (ch === 'っ') { out = out ? out.slice(0, -1) + addFinal(out.slice(-1), 19) : ''; continue; }
+    if (ch === 'ー') { out += '-'; continue; }
+    out += KR[ch] || ch;
+  }
+  return out;
+}
+function nextChar(w) {
+  let h = toHira((w || '').trim()).replace(/[\s()（）].*$/, '');
+  h = h.replace(/[^\u3041-\u3096ー]/g, '');
+  while (h.endsWith('ー')) h = h.slice(0, -1);
+  if (!h) return '';
+  let last = h.slice(-1);
+  if (BIG[last]) last = BIG[last];
+  return last;
+}
+function render() {
+  const sets = { base: BASE, daku: DAKU, small: SMALL };
+  const need = nextChar($('prev').value);
+  $('next').textContent = need ? (mode === 'kata' ? toKata(need) + ' / ' + need : need + ' / ' + toKata(need)) : '?';
+  $('grid').innerHTML = '';
+  sets[set].flat().forEach(k => {
+    const b = document.createElement('div');
+    if (!k) { b.className = 'k empty'; $('grid').appendChild(b); return; }
+    b.className = 'k' + (need && word.length === 0 && k === need ? ' hint' : '');
+    const shown = mode === 'kata' ? toKata(k) : k;
+    b.innerHTML = `<span class="j">${shown}</span><span class="h">${k === 'ー' ? '장음' : korean(k)}</span>`;
+    b.onclick = () => { for (const ch of shown) word.push(ch); update(); };
+    $('grid').appendChild(b);
+  });
+  document.querySelectorAll('.tab[data-mode]').forEach(t => t.classList.toggle('on', t.dataset.mode === mode));
+  document.querySelectorAll('.tab[data-set]').forEach(t => t.classList.toggle('on', t.dataset.set === set));
+  update();
+}
+function update() {
+  const w = word.join('');
+  $('out').innerHTML = w.replace(/</g, '&lt;') + '<span class="cursor"></span>';
+  const h = toHira(w);
+  $('kr').textContent = w ? '읽는 법: ' + korean(h) : '';
+  const need = nextChar($('prev').value);
+  const m = $('msg');
+  if (!w) { m.textContent = need ? `「${need}」(으)로 시작하는 단어를 만들어 보세요!` : ''; m.className = 'msg'; return; }
+  const first = h[0];
+  if (/ん$/.test(h)) { m.textContent = '앗! 「ん」으로 끝나면 져요. 다른 단어를 찾아보세요.'; m.className = 'msg bad'; return; }
+  if (need && first !== need) { m.textContent = `앞 단어가 「${need}」로 끝나요. 「${need}」로 시작해야 해요.`; m.className = 'msg bad'; return; }
+  m.textContent = need ? '좋아요! 이어지는 단어예요. 뜻을 쓰고 복사하세요.' : '좋아요! 복사해서 카페에 올려 보세요.'; m.className = 'msg ok';
+}
+function modifyLast(fn) { if (!word.length) return; const last = word[word.length - 1]; const h = toHira(last); const r = fn(h); if (r && r !== h) { word[word.length - 1] = mode === 'kata' || /[\u30A1-\u30F6]/.test(last) ? toKata(r) : r; update(); } }
+$('kDaku').onclick = () => modifyLast(h => cycleNext(h));
+$('kSmall').onclick = () => modifyLast(h => SMALL_MAP[h] || BIG[h] || h);
+$('kLong').onclick = () => { word.push('ー'); update(); };
+$('kBack').onclick = () => { word.pop(); update(); };
+$('kClear').onclick = () => { word = []; update(); };
+$('prev').oninput = render;
+document.querySelectorAll('.tab[data-mode]').forEach(t => t.onclick = () => { mode = t.dataset.mode; render(); });
+document.querySelectorAll('.tab[data-set]').forEach(t => t.onclick = () => { set = t.dataset.set; render(); });
+$('kCopy').onclick = async () => {
+  const w = word.join(''); if (!w) { $('copied').textContent = '먼저 단어를 만들어 주세요.'; return; }
+  const mean = $('mean').value.trim();
+  const text = `${w} (${korean(toHira(w))}${mean ? ' / ' + mean : ''})`;
+  try { await navigator.clipboard.writeText(text); }
+  catch (e) { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
+  $('copied').textContent = `복사했어요: ${text}  →  카페 메모칸에 Ctrl+V 로 붙여 넣으세요!`;
+};
+render();
+</script>
+</body>
+</html>
